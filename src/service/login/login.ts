@@ -3,7 +3,9 @@ import { IAccount, IDataType, ILoginResult } from "./types"
 
 enum LoginApi {
   AccountLogin = "/login",
-  LoginUserInfo = "/user/"
+  LoginUserInfo = "/user/",
+  AdminMenu = "/adminmenu",
+  Menu = "/menu"
 }
 
 export function accountLoginRequest(account: IAccount) {
@@ -14,7 +16,19 @@ export function accountLoginRequest(account: IAccount) {
 }
 
 export function requestUserInfoById(id: string) {
-  return CLRequest.get({
+  return CLRequest.get<IDataType<ILoginResult>>({
     url: LoginApi.LoginUserInfo + id
   })
+}
+
+export function requestUserMenu(roleId: number) {
+  if (roleId === 1) {
+    return CLRequest.get<IDataType<ILoginResult>>({
+      url: LoginApi.AdminMenu
+    })
+  } else if (roleId === 2) {
+    return CLRequest.get<IDataType<ILoginResult>>({
+      url: LoginApi.Menu
+    })
+  }
 }

@@ -5,10 +5,11 @@ export interface IAccount {
 }
 export interface ILoginResult {
   _id: string
-  id: number
-  name: string
+  roleId: number
+  name?: string
   token: string
   message: string
+  menus: []
 }
 
 export interface IDataType<T = any> {
@@ -27,6 +28,7 @@ export interface IRegiResult {
 }
 
 export interface IForgetResult {
+  id: string
   message: string
 }
 
@@ -34,4 +36,8 @@ export interface IForget {
   name: string
   phone: string
   email: string
+}
+export interface ICheck {
+  password: string
+  confirmPassword?: string
 }

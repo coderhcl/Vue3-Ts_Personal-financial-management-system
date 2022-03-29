@@ -54,27 +54,32 @@
           </span>
         </template>
       </el-dialog>
-      <el-dialog v-model="checkFormVisible" title="更改密码">
+      <el-dialog v-model="checkFormVisible" title="更改密码" width="400px">
         <el-form :model="checkPasswordForm" :rules="passwordRules">
           <el-form-item
             label="请输入新密码:"
             label-width="140px"
             prop="password"
           >
-            <el-input v-model="checkPasswordForm.password" />
+            <el-input v-model="checkPasswordForm.password" show-password />
           </el-form-item>
           <el-form-item
             label="请确认密码:"
             label-width="140px"
             prop="confirmPassword"
           >
-            <el-input v-model="checkPasswordForm.confirmPassword" />
+            <el-input
+              v-model="checkPasswordForm.confirmPassword"
+              show-password
+            />
           </el-form-item>
         </el-form>
         <template #footer>
           <span class="dialog-footer">
             <el-button @click="dialogVisible = false">取消</el-button>
-            <el-button type="primary" @click="confirmPassword">提交</el-button>
+            <el-button type="primary" @click="confirmPasswordClick"
+              >提交</el-button
+            >
           </span>
         </template>
       </el-dialog>
@@ -98,15 +103,17 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue"
-import { Avatar, EditPen } from "@element-plus/icons-vue"
 import LoginAccount from "./login-account.vue"
 import LoginRegistration from "./login-registration.vue"
 import { numberRules, passwordRules } from "../config/account-forget-password"
-import { forgetPassword } from "../../../service/login/forgetPassword"
+import {
+  checkPassword,
+  forgetPassword
+} from "../../../service/login/forgetPassword"
 import { ElMessage, ElNotification } from "element-plus"
 
 export default defineComponent({
-  components: { Avatar, EditPen, LoginAccount, LoginRegistration },
+  components: { LoginAccount, LoginRegistration },
   setup() {
     const isKeepPassword = ref(true)
     // 注册不展示记住密码
@@ -128,19 +135,23 @@ export default defineComponent({
       registrationRef.value?.registrationAction()
     }
 
-    // 忘记密码
+    // 忘记密码-找回密码
     const getPasswordForm = reactive({
-      name: "admin",
-      phone: "14778588331",
-      email: "2814884095@qq.com"
+      name: "",
+      phone: "",
+      email: "",
+      id: ""
     })
+
     const checkPasswordForm = reactive({
       password: "",
-      confirmPassword: ""
+      confirmPassword: "",
+      id: ""
     })
     const dialogFormVisible = ref(false)
     const checkFormVisible = ref(false)
 
+    // 校验用户名和手机号和邮箱
     const checkForm = async () => {
       const result = await forgetPassword(getPasswordForm)
       if (result.code > 0) {
@@ -151,13 +162,38 @@ export default defineComponent({
           message: result.data.message,
           type: "success"
         })
-        // if (checkPasswordForm.password === checkPasswordForm.confirmPassword) {
-        //   console.log("hahah")
-        // }
+
+        checkPasswordForm.id = result.data.id
       } else {
         ElMessage({
           showClose: true,
           message: result.data.message,
+          type: "warning"
+        })
+      }
+    }
+    // 修改密码
+    const confirmPasswordClick = async () => {
+      if (
+        checkPasswordForm.password == checkPasswordForm.confirmPassword &&
+        checkPasswordForm.password != "" &&
+        checkPasswordForm.confirmPassword != ""
+      ) {
+        // 使用id查找对应用户并修改密码
+        const result = await checkPassword(checkPasswordForm)
+        if (result.code > 0) {
+          ElNotification({
+            title: "修改密码成功",
+            message: result.data.message,
+            type: "success"
+          })
+          // 关闭对话框
+          checkFormVisible.value = false
+        }
+      } else {
+        ElMessage({
+          showClose: true,
+          message: "两次密码不相同",
           type: "warning"
         })
       }
@@ -179,7 +215,8 @@ export default defineComponent({
       passwordRules,
       forgetPassword,
       checkFormVisible,
-      checkPasswordForm
+      checkPasswordForm,
+      confirmPasswordClick
     }
   }
 })
