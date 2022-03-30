@@ -5,6 +5,7 @@
       <span v-if="!collapse" class="title">个人财务管理</span>
     </div>
     <el-menu
+      :default-active="defaultValue"
       class="el-menu-vertical"
       :collapse="collapse"
       background-color="#0c2135"
@@ -14,7 +15,7 @@
       <template v-for="item in userMenus" :key="item._id">
         <!-- 一级菜单 -->
         <template v-if="item.type === 2">
-          <el-menu-item :index="item._id">
+          <el-menu-item :index="item.url">
             <el-icon>
               <component :is="item.icon"></component>
             </el-icon>
@@ -23,8 +24,8 @@
         </template>
         <!-- 二级菜单 -->
         <template v-else-if="item.type === 1">
-          <!-- 二级菜单可以展开的标题  还差index标示-->
-          <el-sub-menu :index="item._id">
+          <!-- 二级菜单可以展开的标题 -->
+          <el-sub-menu :index="item.url">
             <template #title>
               <el-icon>
                 <component :is="item.icon"></component>
@@ -34,7 +35,7 @@
             <!-- 二级菜单里面的item -->
             <template v-for="(subitem, index) in item.children" :key="index">
               <el-menu-item
-                :index="item._id + index"
+                :index="subitem.url"
                 @click="handleMenuItemClick(subitem)"
               >
                 <!-- <el-icon> <component :is="item.icon"></component> </el-icon> -->
@@ -49,9 +50,9 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "vue"
+import { computed, defineComponent, ref } from "vue"
 import { useStore } from "../../../store"
-import { useRouter } from "vue-router"
+import { useRouter, useRoute } from "vue-router"
 export default defineComponent({
   props: {
     collapse: {
@@ -61,17 +62,22 @@ export default defineComponent({
   },
   setup() {
     const store = useStore()
-    // const userMenus = store.state.login.userMenus.adminmenu
     const userMenus = computed(() => store.state.login.userMenus.menus)
+
     // console.log(userMenus)
     const router = useRouter()
+
+    const defaultValue = ref("/main/home/show")
+    const route = useRoute()
+    const currentPath = route.path
+    defaultValue.value = currentPath
+
     const handleMenuItemClick = (item: any) => {
       router.push({
         path: item.url ?? "/notFound"
       })
-      console.log(item)
     }
-    return { userMenus, handleMenuItemClick }
+    return { userMenus, handleMenuItemClick, defaultValue }
   }
 })
 </script>

@@ -34,10 +34,10 @@ const loginModule: Module<ILoginState, IRootState> = {
     },
     changeUserMenus(state, userMenus: any) {
       state.userMenus = userMenus
-
       // userMenu => routes
       const menus = userMenus.menus
       const routes = mapMenusToRoutes(menus)
+
       // 将routes => router.main.children
       // 注册menu中存在url符合的路由
       routes.forEach((route) => {
@@ -65,7 +65,7 @@ const loginModule: Module<ILoginState, IRootState> = {
 
         if (userMenusResult!.code > 0) {
           const userMenus = userMenusResult!.data
-          console.log(userMenus)
+          // console.log(userMenus)
 
           commit("changeUserMenus", userMenus)
           localCache.setCache("userMenus", userMenus)
@@ -74,7 +74,7 @@ const loginModule: Module<ILoginState, IRootState> = {
           message: message,
           type: "success"
         })
-        router.push("/main")
+        router.push("/main/home/show")
       } else {
         ElMessage({
           message: message,

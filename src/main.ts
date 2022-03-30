@@ -4,7 +4,7 @@ import * as ElIcons from "@element-plus/icons-vue"
 import "element-plus/dist/index.css"
 import "normalize.css"
 import "./assets/css/index.less"
-import clRequest from "./service"
+// import clRequest from "./service"
 
 import App from "./App.vue"
 import router from "./router"
@@ -16,23 +16,12 @@ for (const name in ElIcons) {
   app.component(name, (ElIcons as any)[name])
 }
 app.use(store)
-app.use(router)
 setupStore()
 app.use(ElementPlus)
+app.use(router)
 app.mount("#app")
 
-// type DataType = {
-//   data: any
-//   returnCode: string
-//   success: string
-// }
-// clRequest
-//   .get<DataType>({
-//     url: "/home/multidata",
-//     showLoading: false
-//   })
-//   .then((res) => {
-//     console.log(res.data)
-//     console.log(res.returnCode)
-//     console.log(res.success)
-//   })
+// git remote add origin git@github.com:coderhcl/Vue3-TS-Personal-financial-management-system.git
+// git remote add origin git@github.com:coderhcl/Node-Api-Personal-financial-management-system.git
+// git branch -M main
+// git push -u origin main

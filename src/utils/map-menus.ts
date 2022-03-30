@@ -1,17 +1,17 @@
+import { IBreadcrumb } from "@/base-ui/breadcrumb"
 import { RouteRecordRaw } from "vue-router"
 
 export function mapMenusToRoutes(userMenus: any[]): RouteRecordRaw[] {
   const routes: RouteRecordRaw[] = []
-
-  // 1.先去加载默认所有的routes
+  // 1.先去加载默认所有的route
   const allRoutes: RouteRecordRaw[] = []
   const routeFiles = require.context("../router/main", true, /\.ts/)
   routeFiles.keys().forEach((key) => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const route = require("../router/main" + key.split(".")[1])
+
     allRoutes.push(route.default)
   })
-
   // 2.根据菜单获取需要添加的routes
   // userMenus:
   // type === 1 -> children -> type === 1
@@ -31,3 +31,30 @@ export function mapMenusToRoutes(userMenus: any[]): RouteRecordRaw[] {
 
   return routes
 }
+// 面包屑
+export function pathMapBreadcrumbs(userMenus: any[], currentPath: string) {
+  const breadcrumbs: IBreadcrumb[] = []
+  pathMapToMenu(userMenus, currentPath, breadcrumbs)
+  return breadcrumbs
+}
+
+// /main/system/role  -> type === 2 对应menu
+export function pathMapToMenu(
+  userMenus: any[],
+  currentPath: string,
+  breadcrumbs?: IBreadcrumb[]
+): any {
+  for (const menu of userMenus) {
+    if (menu.type === 1) {
+      const findMenu = pathMapToMenu(menu.children ?? [], currentPath)
+      if (findMenu) {
+        breadcrumbs?.push({ name: menu.name })
+        breadcrumbs?.push({ name: findMenu.name })
+        return findMenu
+      }
+    } else if (menu.type === 2 && menu.url === currentPath) {
+      return menu
+    }
+  }
+}
+//

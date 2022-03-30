@@ -3,7 +3,7 @@ import localCache from "@/utils/cache"
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    redirect: "/main"
+    redirect: "/main/home/show"
   },
   {
     path: "/login",
@@ -33,6 +33,13 @@ router.beforeEach((to) => {
     if (!token) {
       return "/login"
     }
+  }
+
+  if (to.path === "/main") {
+    return "/"
+  }
+  if (to.path === "/main/") {
+    return "/"
   }
 })
 export default router
