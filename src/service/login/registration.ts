@@ -1,5 +1,6 @@
 import CLRequest from "../index"
-import { IDataType, IRegi, IRegiResult } from "./types"
+import { IRegi, IRegiResult } from "./types"
+import { IDataType } from "../types"
 
 export function accountRegiRequest(account: IRegi) {
   return CLRequest.post<IDataType<IRegiResult>>({

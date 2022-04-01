@@ -1,10 +1,11 @@
 <template>
   <!-- Fold  <el-icon><expand /></el-icon>-->
   <div class="nav-header">
-    <div @click="handleFlodClick">
+    <div @click="handleFoldClick">
       <el-icon v-if="isFold"><expand /></el-icon>
       <el-icon v-else><fold /></el-icon>
     </div>
+    <!-- 面包屑 -->
     <div class="content">
       <cl-breadcrumb :breadcrumbs="breadcrumbs" />
       <user-info />
@@ -14,8 +15,8 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from "vue"
-import UserInfo from "./uesr-info.vue"
-import clBreadcrumb, { IBreadcrumb } from "@/base-ui/breadcrumb"
+import UserInfo from "./user-info.vue"
+import clBreadcrumb from "@/base-ui/breadcrumb"
 import { pathMapBreadcrumbs } from "@/utils/map-menus"
 import { useStore } from "@/store"
 import { useRoute } from "vue-router"
@@ -24,12 +25,12 @@ export default defineComponent({
     UserInfo,
     clBreadcrumb
   },
-  emits: ["foladChange"],
+  emits: ["foldChange"],
   setup(prop, { emit }) {
     const isFold = ref(false)
-    const handleFlodClick = () => {
+    const handleFoldClick = () => {
       isFold.value = !isFold.value
-      emit("foladChange", isFold.value)
+      emit("foldChange", isFold.value)
     }
 
     // 面包屑数据[{name:name,path:path}]
@@ -42,7 +43,7 @@ export default defineComponent({
       return pathMapBreadcrumbs(userMenus, currentPath)
     })
 
-    return { isFold, handleFlodClick, breadcrumbs }
+    return { isFold, handleFoldClick, breadcrumbs }
   }
 })
 </script>

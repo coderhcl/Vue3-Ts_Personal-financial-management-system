@@ -1,5 +1,6 @@
 import CLRequest from "../index"
-import { ICheck, IDataType, IForget, IForgetResult } from "./types"
+import { ICheck, IForget, IForgetResult } from "./types"
+import { IDataType } from "../types"
 
 export function forgetPassword(account: IForget) {
   return CLRequest.get<IDataType<IForgetResult>>({

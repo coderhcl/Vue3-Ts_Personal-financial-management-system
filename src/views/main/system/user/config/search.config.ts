@@ -32,7 +32,7 @@ export const searchFormConfig: IForm = {
       placeholder: "请输入邮箱"
     },
     {
-      field: "role",
+      field: "roleId",
       type: "select",
       label: "角色",
       placeholder: "请选择角色",
@@ -53,3 +53,28 @@ export const searchFormConfig: IForm = {
     }
   ]
 }
+
+// name: [
+//   {
+//     required: true,
+//     message: "请输入账号！",
+//     trigger: "blur"
+//   },
+//   {
+//     pattern: /^[a-z0-9]{5,15}$/,
+//     message: "账号必须5-15个字母或数字",
+//     trigger: "blur"
+//   }
+// ],
+// password: [
+//   {
+//     required: true,
+//     message: "请输入密码！",
+//     trigger: "blur"
+//   },
+//   {
+//     pattern: /^[a-z0-9]{3,}$/,
+//     message: "密码必须3位以上字母或数字",
+//     trigger: "blur"
+//   }
+// ]

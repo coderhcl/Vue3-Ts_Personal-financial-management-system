@@ -12,10 +12,6 @@ export interface ILoginResult {
   menus: []
 }
 
-export interface IDataType<T = any> {
-  code: number
-  data: T
-}
 // 注册
 export interface IRegi {
   name: string

@@ -68,7 +68,7 @@ class CLRequest {
   // 自定义封装函数 request(config) 接收外面传来的参数config，
   // 3、封装函数也可以有拦截器
   // this.instance实例对象和 axios一样
-  request<T>(config: CLRequestConfig<T>): Promise<T> {
+  request<T = any>(config: CLRequestConfig<T>): Promise<T> {
     return new Promise((resolve, reject) => {
       // 1单个请求对config的处理
       if (config.interceptors?.requestInterceptor) {
@@ -98,17 +98,17 @@ class CLRequest {
     })
   }
 
-  get<T>(config: CLRequestConfig<T>): Promise<T> {
+  get<T = any>(config: CLRequestConfig<T>): Promise<T> {
     return this.request<T>({ ...config, method: "GET" })
   }
 
-  post<T>(config: CLRequestConfig<T>): Promise<T> {
+  post<T = any>(config: CLRequestConfig<T>): Promise<T> {
     return this.request<T>({ ...config, method: "POST" })
   }
-  delete<T>(config: CLRequestConfig<T>): Promise<T> {
+  delete<T = any>(config: CLRequestConfig<T>): Promise<T> {
     return this.request<T>({ ...config, method: "DELETE" })
   }
-  patch<T>(config: CLRequestConfig<T>): Promise<T> {
+  patch<T = any>(config: CLRequestConfig<T>): Promise<T> {
     return this.request<T>({ ...config, method: "PATCH" })
   }
 }
