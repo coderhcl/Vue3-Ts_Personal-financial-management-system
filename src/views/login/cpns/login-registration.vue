@@ -45,7 +45,7 @@ export default defineComponent({
     const registrationAction = () => {
       RegifromRef.value?.validate((valid) => {
         if (valid) {
-          store.dispatch("registration/accountRegiAction", { ...registration })
+          store.dispatch("login/accountRegiAction", { ...registration })
         }
       })
     }

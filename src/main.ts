@@ -10,14 +10,13 @@ import App from "./App.vue"
 import router from "./router"
 import store from "./store"
 import { setupStore } from "./store"
-
 const app = createApp(App)
 for (const name in ElIcons) {
   app.component(name, (ElIcons as any)[name])
 }
 app.use(store)
-setupStore()
 app.use(ElementPlus)
+setupStore()
 app.use(router)
 app.mount("#app")
 

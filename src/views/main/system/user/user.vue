@@ -79,12 +79,15 @@
             >{{ scope.row.roleId === 2 ? "普通用户" : "管理员" }}</el-button
           >
         </template>
+        <!-- 处理创建时间 -->
         <template #createTimes="scope">
           {{ parseDate(scope.row.createTimes) }}
         </template>
+        <!-- 处理更新时间 -->
         <template #updateTime="scope">
           {{ parseDate(scope.row.updateTime) }}
         </template>
+        <!-- 编辑 删除 -->
         <template #handler="scope">
           <div class="handle-btns">
             <el-button
@@ -110,7 +113,7 @@
           <el-pagination
             v-model:currentPage="currentPage"
             v-model:page-size="pageSize"
-            :page-sizes="[2, 4, 6, 8]"
+            :page-sizes="[6, 8, 10, 12]"
             small
             :background="true"
             layout="total, sizes, prev, pager, next, jumper"
@@ -200,7 +203,7 @@ export default defineComponent({
       createTime: ""
     })
     // 每页展示条数
-    const pageSize = ref(6)
+    const pageSize = ref(12)
     // 偏移量
     const currentPage = ref(1)
     const store = useStore()
@@ -319,7 +322,7 @@ export default defineComponent({
       }
       editFormVisible.value = true
     }
-
+    // 编辑界面确定提交
     const editUserConfirm = () => {
       editUserForm.value?.validate(async (valid) => {
         editUserFormData.updateTime = new Date().toISOString()

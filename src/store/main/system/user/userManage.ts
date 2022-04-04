@@ -32,24 +32,6 @@ const systemModule: Module<ISystemState, IRootState> = {
       commit("changeUserList", list)
       commit("changeUserCount", totalCount)
     }
-    // 添加用户
-    // async addUserAction({ commit }, formData: any) {
-    //   const addUserResult = await addUserData(formData)
-    //   if (addUserResult.code > 0) {
-    //     // 注册成功，实现登录逻辑
-    //     const addUserRequest = await addUserData(formData)
-    //     const { message } = addUserRequest.data
-    //     ElMessage({
-    //       message: message,
-    //       type: "success"
-    //     })
-    //   } else {
-    //     ElMessage({
-    //       message: addUserResult.data.message,
-    //       type: "warning"
-    //     })
-    //   }
-    // }
   }
 }
 

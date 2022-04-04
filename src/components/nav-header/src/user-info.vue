@@ -33,6 +33,8 @@ import { ElMessage, ElMessageBox } from "element-plus"
 export default defineComponent({
   setup() {
     const store = useStore()
+    // console.log(store.state.registration)
+
     const name = computed(() => store.state.login.userInfo.data.name)
     const handleUserExitClick = () => {
       ElMessageBox.confirm("确定退出？", "是否退出登录", {
@@ -54,8 +56,6 @@ export default defineComponent({
             message: "退出已取消！"
           })
         })
-
-      console.log("退出")
     }
     const handleUserMessageClick = () => {
       console.log("xingx")
