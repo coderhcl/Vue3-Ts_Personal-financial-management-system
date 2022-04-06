@@ -33,7 +33,7 @@
     </div>
     <div class="content">
       <div class="title">
-        <span>分类列表</span>
+        <span>收入分类列表</span>
         <div class="handleBtn">
           <el-button type="primary" @click="categoryFormVisible = true"
             >新建分类</el-button
@@ -150,10 +150,10 @@ import { defineComponent, onMounted, reactive, ref } from "vue"
 import clForm from "@/base-ui/form"
 import { Search, RefreshRight, Delete, Edit } from "@element-plus/icons-vue"
 import {
-  addCategoryData,
-  deleteCategory,
+  addIncomeCategoryData,
+  deleteIncomeCategory,
   getPageListData,
-  updateCategory
+  updateIncomeCategory
 } from "@/service/main/system/system"
 import { parseDate } from "@/utils/parseDate"
 import { rules } from "./config/addCategoryRoules"
@@ -186,7 +186,7 @@ export default defineComponent({
     const currentPage = ref(1)
     // 获取页面数据
     const getCategoryList = async () => {
-      const pageResult = await getPageListData("/category/list", {
+      const pageResult = await getPageListData("/income/category/list", {
         offset: currentPage.value,
         size: pageSize.value,
         formData: formData.value
@@ -231,7 +231,9 @@ export default defineComponent({
     const addCategory = async () => {
       addCategoryForm.value?.validate(async (valid) => {
         if (valid) {
-          const result = await addCategoryData({ ...addCategoryFormData.value })
+          const result = await addIncomeCategoryData({
+            ...addCategoryFormData.value
+          })
           // console.log(result)
           if (result.code > 0) {
             ElMessage({
@@ -272,7 +274,7 @@ export default defineComponent({
       aditCategoryForm.value?.validate(async (valid) => {
         if (valid) {
           aditCategoryFormData.value.updateTime = new Date().toISOString()
-          const result = await updateCategory(updateId.value, {
+          const result = await updateIncomeCategory(updateId.value, {
             ...aditCategoryFormData.value
           })
           if (result.code > 0) {
@@ -298,7 +300,7 @@ export default defineComponent({
         cancelButtonText: "取消",
         type: "warning"
       }).then(async () => {
-        const deleteCategoryResult = await deleteCategory(row._id)
+        const deleteCategoryResult = await deleteIncomeCategory(row._id)
         if (deleteCategoryResult.code > 0) {
           ElMessage({
             type: "info",
@@ -338,7 +340,7 @@ export default defineComponent({
       editCategory,
       openEdit,
       updateId,
-      updateCategory,
+      updateIncomeCategory,
       handleDeleteCategory,
       pageSize,
       currentPage,
