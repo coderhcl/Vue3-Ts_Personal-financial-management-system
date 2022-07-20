@@ -1,5 +1,5 @@
 <template>
-  <div class="incomeCategory">
+  <div class="investmentCategory">
     <div class="search">
       <el-form :model="formData">
         <el-row>
@@ -66,15 +66,16 @@
           </el-dialog>
         </div>
       </div>
-      <el-table border :data="incomeTableData" stripe>
+      <el-table border :data="investmentTableData" stripe>
         <el-table-column
           type="index"
           label="序号"
           align="center"
-          width="60"
+          width="100"
         ></el-table-column>
-        <el-table-column prop="name" label="分类" align="center" width="120" />
+        <el-table-column prop="name" label="分类" align="center" width="180" />
         <el-table-column
+          sortable
           prop="createTime"
           label="创建时间"
           align="center"
@@ -83,6 +84,7 @@
         >
         </el-table-column>
         <el-table-column
+          sortable
           prop="updateTime"
           label="更新时间"
           align="center"
@@ -157,10 +159,10 @@ import {
 } from "@/service/main/system/system"
 import { parseDate } from "@/utils/parseDate"
 import { rules } from "./config/addCategoryRoules"
-import { ElForm, ElMessage, ElMessageBox } from "element-plus"
+import { ElForm, ElMessage, ElMessageBox, ElNotification } from "element-plus"
 
 export default defineComponent({
-  name: "incomeCategory",
+  name: "investmentCategory",
   setup() {
     onMounted(() => {
       getCategoryList()
@@ -171,7 +173,7 @@ export default defineComponent({
       createTime: ""
     })
     // table数据
-    const incomeTableData = ref([])
+    const investmentTableData = ref([])
     // 格式化时间
     const FormateCreateTime = (row: any) => {
       return parseDate(row.createTime)
@@ -193,7 +195,7 @@ export default defineComponent({
       })
       if (pageResult.code > 0) {
         categoryCount.value = pageResult.data.totalCount
-        incomeTableData.value = pageResult.data.list
+        investmentTableData.value = pageResult.data.list
       }
     }
     // 改变分页时发送请求
@@ -234,9 +236,9 @@ export default defineComponent({
           const result = await addInvestmentCategoryData({
             ...addCategoryFormData.value
           })
-          // console.log(result)
           if (result.code > 0) {
-            ElMessage({
+            ElNotification({
+              title: "Success",
               message: result.data.message,
               type: "success"
             })
@@ -244,7 +246,8 @@ export default defineComponent({
             addCategoryFormData.value.name = ""
             categoryFormVisible.value = false
           } else {
-            ElMessage({
+            ElNotification({
+              title: "Warning",
               message: result.data.message,
               type: "warning"
             })
@@ -278,14 +281,16 @@ export default defineComponent({
             ...aditCategoryFormData.value
           })
           if (result.code > 0) {
-            ElMessage({
+            ElNotification({
+              title: "Success",
               message: result.data.message,
               type: "success"
             })
             getCategoryList()
             editCategoryVisible.value = false
           } else {
-            ElMessage({
+            ElNotification({
+              title: "Warning",
               message: result.data.message,
               type: "warning"
             })
@@ -302,14 +307,16 @@ export default defineComponent({
       }).then(async () => {
         const deleteCategoryResult = await deleteInvestmentCategory(row._id)
         if (deleteCategoryResult.code > 0) {
-          ElMessage({
-            type: "info",
-            message: row.name + `删除成功`
+          ElNotification({
+            title: "Success",
+            message: row.name + `删除成功`,
+            type: "success"
           })
         } else {
-          ElMessage({
-            type: "info",
-            message: row.name + `删除失败`
+          ElNotification({
+            title: "Warning",
+            message: row.name + `删除成功`,
+            type: "warning"
           })
         }
         getCategoryList()
@@ -321,7 +328,7 @@ export default defineComponent({
       RefreshRight,
       Edit,
       Delete,
-      incomeTableData,
+      investmentTableData,
       parseDate,
       FormateCreateTime,
       FormateUpdateTime,

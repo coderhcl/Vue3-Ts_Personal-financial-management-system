@@ -10,7 +10,12 @@
         </el-header>
         <el-main class="page-content">
           <div class="page-info">
-            <router-view></router-view>
+            <transition
+              enter-active-class="animate__animated animate__fadeInRight"
+              leave-active-class="animate__animated animate__fadeOutRight"
+            >
+              <router-view />
+            </transition>
           </div>
         </el-main>
       </el-container>

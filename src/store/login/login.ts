@@ -3,15 +3,18 @@ import { ILoginState } from "./types"
 import { IRootState } from "../types"
 import {
   accountLoginRequest,
+  requestNotice,
   requestUserInfoById,
   requestUserMenu
 } from "@/service/login/login"
 import { IAccount, IRegi } from "@/service/login/types"
-import { ElMessage } from "element-plus"
+import { ElMessage, ElNotification } from "element-plus"
 import router from "@/router"
 import localCache from "@/utils/cache"
 import { mapMenusToRoutes } from "@/utils/map-menus"
 import { accountRegiRequest } from "@/service/login/registration"
+import { getIncomeChartData } from "@/service/main/property/property"
+import { ref } from "vue"
 
 const loginModule: Module<ILoginState, IRootState> = {
   namespaced: true,
@@ -20,7 +23,8 @@ const loginModule: Module<ILoginState, IRootState> = {
       token: "",
       userInfo: {},
       roleId: 2,
-      userMenus: []
+      userMenus: [],
+      notice: ""
     }
   },
   getters: {},
@@ -30,6 +34,9 @@ const loginModule: Module<ILoginState, IRootState> = {
     },
     changeUserInfo: (state, userInfo: any) => {
       state.userInfo = userInfo
+    },
+    changeNotice: (state, notice: any) => {
+      state.notice = notice
     },
     changeRoleId: (state, roleId: number) => {
       state.roleId = roleId
@@ -51,34 +58,42 @@ const loginModule: Module<ILoginState, IRootState> = {
     // 1.实现登录逻辑
     async accountLoginAction({ commit }, payload: IAccount) {
       const loginRequest = await accountLoginRequest(payload)
-      // console.log(loginRequest)
-
       const { _id, token, message, roleId } = loginRequest.data
 
       if (loginRequest.code > 0) {
+        // 获取当前登录时间
+        const loginDay = new Date().toLocaleString()
+        localCache.setCache("loginDay", loginDay)
         commit("changeToken", token)
         localCache.setCache("token", token)
         // 2.请求用户信息
         const userInfo = await requestUserInfoById(_id)
+        localCache.setCache(`${userInfo.data.user.name}+loginDay`, loginDay)
         commit("changeUserInfo", userInfo)
         localCache.setCache("userInfo", userInfo)
+        const notice = await requestNotice()
+        commit("changeNotice", notice)
+        localCache.setCache("notice", notice)
+
         // 3.请求菜单
         const userMenusResult = await requestUserMenu(roleId)
 
         if (userMenusResult!.code > 0) {
           const userMenus = userMenusResult!.data
-          // console.log(userMenus)
 
           commit("changeUserMenus", userMenus)
           localCache.setCache("userMenus", userMenus)
         }
-        ElMessage({
+        ElNotification({
+          title: "Success",
           message: message,
           type: "success"
         })
+
         router.push("/main/home/show")
       } else {
-        ElMessage({
+        ElNotification({
+          title: "Warning",
           message: message,
           type: "warning"
         })
@@ -98,6 +113,10 @@ const loginModule: Module<ILoginState, IRootState> = {
       if (userMenus) {
         commit("changeUserMenus", userMenus)
       }
+      const notice = localCache.getCache("notice")
+      if (notice) {
+        commit("changeNotice", notice)
+      }
     },
     // 注册逻辑
     async accountRegiAction({ commit }, payload: IRegi) {
@@ -106,7 +125,8 @@ const loginModule: Module<ILoginState, IRootState> = {
       loginInfo.password = payload.password
       const regiResult = await accountRegiRequest(payload)
       if (regiResult.code < 0) {
-        ElMessage({
+        ElNotification({
+          title: "Warning",
           message: regiResult.data.message,
           type: "warning"
         })
@@ -131,21 +151,26 @@ const loginModule: Module<ILoginState, IRootState> = {
             commit("changeUserMenus", userMenu)
             localCache.setCache("userMenus", userMenu)
           }
-          ElMessage({
+          ElNotification({
+            title: "Success",
             message: message,
             type: "success"
           })
+
           router.push("/main")
         } else {
-          ElMessage({
+          ElNotification({
+            title: "Warning",
             message: message,
             type: "warning"
           })
         }
-        ElMessage({
+        ElNotification({
+          title: "Warning",
           message: regiResult.data.message,
           type: "success"
         })
+
         router.push("/main")
       }
     }

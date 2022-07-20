@@ -4,7 +4,7 @@ import type { CLRequestInterceptors, CLRequestConfig } from "./type"
 import { ElLoading } from "element-plus"
 import { LoadingInstance } from "element-plus/lib/components/loading/src/loading"
 
-const DEFAULT_LOADING = true
+const DEFAULT_LOADING = false
 
 class CLRequest {
   // 如果有多个实例，可以创建放在instance这边

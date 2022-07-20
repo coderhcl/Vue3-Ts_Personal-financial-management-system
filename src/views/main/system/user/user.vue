@@ -80,8 +80,8 @@
           >
         </template>
         <!-- 处理创建时间 -->
-        <template #createTimes="scope">
-          {{ parseDate(scope.row.createTimes) }}
+        <template #createTime="scope">
+          {{ parseDate(scope.row.createTime) }}
         </template>
         <!-- 处理更新时间 -->
         <template #updateTime="scope">
@@ -187,7 +187,7 @@ import {
   getUserDataById,
   updateUser
 } from "@/service/main/system/system"
-import { ElForm, ElMessage, ElMessageBox } from "element-plus"
+import { ElForm, ElMessageBox, ElNotification } from "element-plus"
 export default defineComponent({
   name: "user",
   components: {
@@ -200,7 +200,7 @@ export default defineComponent({
       phone: "",
       email: "",
       roleId: "",
-      createTime: ""
+      searchTime: ""
     })
     // 每页展示条数
     const pageSize = ref(12)
@@ -237,7 +237,7 @@ export default defineComponent({
       formData.value.phone = ""
       formData.value.email = ""
       formData.value.roleId = ""
-      formData.value.createTime = ""
+      formData.value.searchTime = ""
       getPageData()
     }
     // 改变分页时发送请求
@@ -270,19 +270,20 @@ export default defineComponent({
         if (valid) {
           const addUserResult = await addUserData({ ...addUserFormData })
           if (addUserResult.code > 0) {
-            ElMessage({
+            ElNotification({
+              title: "Success",
               message: addUserResult.data.message,
               type: "success"
             })
             refreshUser()
             dialogFormVisible.value = false
           } else {
-            ElMessage({
+            ElNotification({
+              title: "Warning",
               message: addUserResult.data.message,
               type: "warning"
             })
           }
-          // console.log(addUserResult)
         }
       })
     }
@@ -332,14 +333,16 @@ export default defineComponent({
             editUserFormData
           )
           if (updateResult.code > 0) {
-            ElMessage({
+            ElNotification({
+              title: "Success",
               message: updateResult.data.message,
               type: "success"
             })
             refreshUser()
             editFormVisible.value = false
           } else {
-            ElMessage({
+            ElNotification({
+              title: "Warning",
               message: updateResult.data.message,
               type: "warning"
             })
@@ -354,9 +357,10 @@ export default defineComponent({
         cancelButtonText: "取消",
         type: "warning"
       }).then(async () => {
-        ElMessage({
-          type: "info",
-          message: row.name + `删除成功`
+        ElNotification({
+          title: "Info",
+          message: row.name + `删除成功`,
+          type: "info"
         })
         const deleteUserResult = await deleteUser(row._id)
         refreshUser()

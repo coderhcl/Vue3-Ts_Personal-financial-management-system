@@ -13,6 +13,7 @@
   "dependencies": {
     "@element-plus/icons-vue": "^1.1.4",
     "@vueup/vue-quill": "^1.0.0-beta.8",
+    "animate.css": "^4.1.1",
     "axios": "^0.26.1",
     "core-js": "^3.8.3",
     "dayjs": "^1.11.0",
@@ -21,6 +22,7 @@
     "normalize.css": "^8.0.1",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
+    "vue3-count-to": "^1.1.2",
     "vuex": "^4.0.0"
   },
   "devDependencies": {

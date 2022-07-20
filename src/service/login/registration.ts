@@ -9,3 +9,10 @@ export function accountRegiRequest(account: IRegi) {
     showLoading: false
   })
 }
+export function sendCodeApi(data: any) {
+  return CLRequest.post({
+    url: "/getcode",
+    data: data,
+    showLoading: true
+  })
+}

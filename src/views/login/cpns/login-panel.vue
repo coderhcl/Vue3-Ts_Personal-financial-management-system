@@ -105,7 +105,7 @@
 import { defineComponent, reactive, ref } from "vue"
 import LoginAccount from "./login-account.vue"
 import LoginRegistration from "./login-registration.vue"
-import { numberRules, passwordRules } from "../config/account-forget-password"
+import { numberRules, passwordRules } from "../config/forget-password-config"
 import {
   checkPassword,
   forgetPassword

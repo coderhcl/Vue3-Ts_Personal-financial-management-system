@@ -1,5 +1,5 @@
 <template>
-  <div class="incomeCategory">
+  <div class="notice">
     <div class="search">
       <el-form :model="formData">
         <el-row>
@@ -7,7 +7,15 @@
             <el-form-item label="标题">
               <el-input
                 placeholder="请输入公告名称"
-                v-model="formData.name"
+                v-model="formData.title"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="内容">
+              <el-input
+                placeholder="请输入公告内容"
+                v-model="formData.content"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -25,7 +33,7 @@
         </el-row>
       </el-form>
       <div class="handleBtn">
-        <el-button type="primary" :icon="Search" @click="searchCategory"
+        <el-button type="primary" :icon="Search" @click="searchNotice"
           >搜索</el-button
         >
         <el-button :icon="RefreshRight" @click="cleanFormData">重置</el-button>
@@ -35,33 +43,30 @@
       <div class="title">
         <span>公告列表</span>
         <div class="handleBtn">
-          <el-button type="primary" @click="categoryFormVisible = true"
+          <el-button type="primary" @click="noticeFormVisible = true"
             >新建公告</el-button
           >
           <el-button class="refresh" @click="refresh">
             <el-icon><refresh /></el-icon>
           </el-button>
           <!-- 弹出卡面 -->
-          <el-dialog
-            v-model="categoryFormVisible"
-            title="添加公告"
-            :width="800"
-          >
+          <el-dialog v-model="noticeFormVisible" title="添加公告" :width="600">
             <el-form
               :label-width="100"
               :model="addNoticeFormData"
+              :rules="rules"
               ref="addCategoryForm"
             >
-              <el-form-item label="标题" prop="name">
+              <el-form-item label="标题" prop="title">
                 <el-input v-model="addNoticeFormData.title" />
               </el-form-item>
-              <el-form-item label="内容">
+              <el-form-item label="内容" prop="content">
                 <el-input type="textarea" v-model="addNoticeFormData.content" />
               </el-form-item>
             </el-form>
             <template #footer>
               <span class="dialog-footer">
-                <el-button @click="categoryFormVisible = false">取消</el-button>
+                <el-button @click="noticeFormVisible = false">取消</el-button>
                 <el-button type="primary" @click="addCategory">添加</el-button>
               </span>
             </template>
@@ -84,15 +89,31 @@
         />
 
         <el-table-column
+          sortable
           prop="createTime"
           label="创建时间"
           align="center"
           ref="createTime"
-          :width="240"
+          :width="230"
           :formatter="FormateCreateTime"
         >
         </el-table-column>
-
+        <el-table-column label="是否推送" align="center" width="140">
+          <template v-slot="scope">
+            <el-switch
+              @click="changeShowNotice(scope.row)"
+              v-model="scope.row.isShow"
+              size="large"
+              inline-prompt
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              active-text="是"
+              inactive-text="否"
+              :active-value="1"
+              :inactive-value="0"
+            />
+          </template>
+        </el-table-column>
         <el-table-column fixed="right" label="操作" align="center">
           <template v-slot="scope">
             <el-button
@@ -107,28 +128,31 @@
               size="small"
               :icon="Delete"
               class="delete"
-              @click="handleDeleteCategory(scope.row)"
+              @click="handleDeleteNotice(scope.row)"
               >删除</el-button
             >
           </template>
         </el-table-column>
       </el-table>
       <!-- 弹出卡面 -->
-      <el-dialog v-model="editCategoryVisible" title="编辑分类" :width="400">
+      <el-dialog v-model="editCategoryVisible" title="编辑公告" :width="400">
         <el-form
           :label-width="80"
-          :model="aditCategoryFormData"
+          :model="editNoticeFormData"
           :rules="rules"
-          ref="aditCategoryForm"
+          ref="editNoticeForm"
         >
-          <el-form-item label="分类" prop="name">
-            <el-input v-model="aditCategoryFormData.name" />
+          <el-form-item label="标题" prop="title">
+            <el-input v-model="editNoticeFormData.title" />
+          </el-form-item>
+          <el-form-item label="内容" prop="content">
+            <el-input type="textarea" v-model="editNoticeFormData.content" />
           </el-form-item>
         </el-form>
         <template #footer>
           <span class="dialog-footer">
             <el-button @click="editCategoryVisible = false">取消</el-button>
-            <el-button type="primary" @click="editCategory">更改</el-button>
+            <el-button type="primary" @click="editNotice">更改</el-button>
           </span>
         </template>
       </el-dialog>
@@ -141,7 +165,7 @@
           small
           :background="true"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="categoryCount"
+          :total="noticeCount"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
         />
@@ -151,7 +175,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, ref } from "vue"
+import { defineComponent, onMounted, ref } from "vue"
 import clForm from "@/base-ui/form"
 import { Search, RefreshRight, Delete, Edit } from "@element-plus/icons-vue"
 import {
@@ -162,7 +186,7 @@ import {
 } from "@/service/main/system/system"
 import { parseDate } from "@/utils/parseDate"
 import { rules } from "./config/addCategoryRoules"
-import { ElForm, ElMessage, ElMessageBox } from "element-plus"
+import { ElForm, ElMessage, ElMessageBox, ElNotification } from "element-plus"
 
 export default defineComponent({
   name: "notice",
@@ -173,7 +197,8 @@ export default defineComponent({
     })
     // 查询数据
     const formData = ref({
-      name: "",
+      title: "",
+      content: "",
       createTime: ""
     })
     // table数据
@@ -182,9 +207,7 @@ export default defineComponent({
     const FormateCreateTime = (row: any) => {
       return parseDate(row.createTime)
     }
-    const FormateUpdateTime = (row: any) => {
-      return parseDate(row.updateTime)
-    }
+
     // 搜索
     // 每页展示条数
     const pageSize = ref(8)
@@ -198,43 +221,44 @@ export default defineComponent({
         formData: formData.value
       })
       if (pageResult.code > 0) {
-        categoryCount.value = pageResult.data.totalCount
+        noticeCount.value = pageResult.data.totalCount
         TableData.value = pageResult.data.list
       }
     }
     // 改变分页时发送请求
     const handleSizeChange = (val: number) => {
       pageSize.value = val
-      searchCategory()
+      searchNotice()
     }
     // 页面跳转时发送请求
     const handleCurrentChange = (val: number) => {
       currentPage.value = val
-      searchCategory()
+      searchNotice()
     }
 
-    const categoryCount = ref(0)
+    const noticeCount = ref(0)
     // 搜索功能
 
-    const searchCategory = async () => {
+    const searchNotice = async () => {
       getCategoryList()
     }
 
     // 重置
     const cleanFormData = () => {
-      formData.value.name = ""
+      formData.value.title = ""
+      formData.value.content = ""
       formData.value.createTime = ""
       getCategoryList()
     }
 
     // 添加公告数据
-    const categoryFormVisible = ref(false)
+    const noticeFormVisible = ref(false)
     const addNoticeFormData = ref({
       title: "",
       content: ""
     })
     const addCategoryForm = ref<InstanceType<typeof ElForm>>()
-    // 添加分类函数实现
+    // 添加公告函数实现
     const addCategory = async () => {
       addCategoryForm.value?.validate(async (valid) => {
         if (valid) {
@@ -243,16 +267,18 @@ export default defineComponent({
           })
           // console.log(result)
           if (result.code > 0) {
-            ElMessage({
+            ElNotification({
+              title: "Success",
               message: result.data.message,
               type: "success"
             })
             getCategoryList()
             addNoticeFormData.value.title = ""
             addNoticeFormData.value.content = ""
-            categoryFormVisible.value = false
+            noticeFormVisible.value = false
           } else {
-            ElMessage({
+            ElNotification({
+              title: "Warning",
               message: result.data.message,
               type: "warning"
             })
@@ -264,36 +290,39 @@ export default defineComponent({
       getCategoryList()
     }
 
-    // 编辑分类
-    const aditCategoryForm = ref<InstanceType<typeof ElForm>>()
+    // 编辑公告
+    const editNoticeForm = ref<InstanceType<typeof ElForm>>()
     const editCategoryVisible = ref(false)
-    const aditCategoryFormData = ref({
-      name: "",
-      updateTime: ""
+    const editNoticeFormData = ref({
+      title: "",
+      content: "",
+      isShow: 0
     })
     const updateId = ref("")
     const openEdit = (row: any) => {
       updateId.value = row._id
-      aditCategoryFormData.value.name = row.name
+      editNoticeFormData.value.title = row.title
+      editNoticeFormData.value.content = row.content
       editCategoryVisible.value = true
     }
     // 确认更改操作
-    const editCategory = async () => {
-      aditCategoryForm.value?.validate(async (valid) => {
+    const editNotice = async () => {
+      editNoticeForm.value?.validate(async (valid) => {
         if (valid) {
-          aditCategoryFormData.value.updateTime = new Date().toISOString()
           const result = await updateNotice(updateId.value, {
-            ...aditCategoryFormData.value
+            ...editNoticeFormData.value
           })
           if (result.code > 0) {
-            ElMessage({
+            ElNotification({
+              title: "Success",
               message: result.data.message,
               type: "success"
             })
             getCategoryList()
             editCategoryVisible.value = false
           } else {
-            ElMessage({
+            ElNotification({
+              title: "Warning",
               message: result.data.message,
               type: "warning"
             })
@@ -301,27 +330,56 @@ export default defineComponent({
         }
       })
     }
-    // 删除分类
-    const handleDeleteCategory = (row: any) => {
-      ElMessageBox.confirm(`确定要删除分类 ` + row.name, "请确认删除", {
+    // 删除公告
+    const handleDeleteNotice = (row: any) => {
+      ElMessageBox.confirm(`确定要删除分类 ` + row.title, "请确认删除", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(async () => {
         const deleteCategoryResult = await deleteNotice(row._id)
         if (deleteCategoryResult.code > 0) {
-          ElMessage({
-            type: "info",
-            message: row.name + `删除成功`
+          ElNotification({
+            title: "Success",
+            message: row.title + `删除成功`,
+            type: "success"
           })
         } else {
-          ElMessage({
-            type: "info",
-            message: row.name + `删除失败`
+          ElNotification({
+            title: "Warning",
+            message: row.title + `删除失败`,
+            type: "warning"
           })
         }
         getCategoryList()
       })
+    }
+
+    // 推送
+    const changeShowNotice = async (row: any) => {
+      // console.log(row.isShow)
+      updateId.value = row._id
+      editNoticeFormData.value.isShow = row.isShow
+      editNoticeFormData.value.title = row.title
+      editNoticeFormData.value.content = row.content
+      const result = await updateNotice(updateId.value, {
+        ...editNoticeFormData.value
+      })
+      if (result.code > 0) {
+        ElNotification({
+          title: "Success",
+          message: result.data.message,
+          type: "success"
+        })
+        getCategoryList()
+        editCategoryVisible.value = false
+      } else {
+        ElNotification({
+          title: "Warning",
+          message: result.data.message,
+          type: "warning"
+        })
+      }
     }
     return {
       clForm,
@@ -332,29 +390,29 @@ export default defineComponent({
       TableData,
       parseDate,
       FormateCreateTime,
-      FormateUpdateTime,
       formData,
       cleanFormData,
-      searchCategory,
-      categoryFormVisible,
+      searchNotice,
+      noticeFormVisible,
       addNoticeFormData,
       addCategory,
       rules,
       addCategoryForm,
       refresh,
       editCategoryVisible,
-      aditCategoryForm,
-      aditCategoryFormData,
-      editCategory,
+      editNoticeForm,
+      editNoticeFormData,
+      editNotice,
       openEdit,
       updateId,
       updateNotice,
-      handleDeleteCategory,
+      handleDeleteNotice,
       pageSize,
       currentPage,
       handleSizeChange,
       handleCurrentChange,
-      categoryCount
+      noticeCount,
+      changeShowNotice
     }
   }
 })
@@ -362,13 +420,13 @@ export default defineComponent({
 
 <style scoped lang="less">
 .search {
-  padding: 20px;
+  padding: 20px 20px 0 20px;
   .el-form {
     margin-left: 10px;
   }
   .handleBtn {
     text-align: right;
-    padding: 0 50px 0 0;
+    padding: 40px 0 0 0;
   }
   .el-input {
     width: 250px;

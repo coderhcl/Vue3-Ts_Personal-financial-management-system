@@ -71,10 +71,11 @@
           type="index"
           label="序号"
           align="center"
-          width="60"
+          width="100"
         ></el-table-column>
-        <el-table-column prop="name" label="分类" align="center" width="120" />
+        <el-table-column prop="name" label="分类" align="center" width="180" />
         <el-table-column
+          sortable
           prop="createTime"
           label="创建时间"
           align="center"
@@ -83,6 +84,7 @@
         >
         </el-table-column>
         <el-table-column
+          sortable
           prop="updateTime"
           label="更新时间"
           align="center"
@@ -108,7 +110,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <!-- 弹出卡面 -->
+      <!-- 编辑分类弹出卡面 -->
       <el-dialog v-model="editCategoryVisible" title="编辑分类" :width="400">
         <el-form
           :label-width="80"
@@ -157,7 +159,7 @@ import {
 } from "@/service/main/system/system"
 import { parseDate } from "@/utils/parseDate"
 import { rules } from "./config/addCategoryRoules"
-import { ElForm, ElMessage, ElMessageBox } from "element-plus"
+import { ElForm, ElMessage, ElMessageBox, ElNotification } from "element-plus"
 
 export default defineComponent({
   name: "incomeCategory",
@@ -236,7 +238,8 @@ export default defineComponent({
           })
           // console.log(result)
           if (result.code > 0) {
-            ElMessage({
+            ElNotification({
+              title: "Success",
               message: result.data.message,
               type: "success"
             })
@@ -244,7 +247,8 @@ export default defineComponent({
             addCategoryFormData.value.name = ""
             categoryFormVisible.value = false
           } else {
-            ElMessage({
+            ElNotification({
+              title: "Warning",
               message: result.data.message,
               type: "warning"
             })
@@ -278,14 +282,16 @@ export default defineComponent({
             ...aditCategoryFormData.value
           })
           if (result.code > 0) {
-            ElMessage({
+            ElNotification({
+              title: "Success",
               message: result.data.message,
               type: "success"
             })
             getCategoryList()
             editCategoryVisible.value = false
           } else {
-            ElMessage({
+            ElNotification({
+              title: "Warning",
               message: result.data.message,
               type: "warning"
             })
@@ -302,14 +308,16 @@ export default defineComponent({
       }).then(async () => {
         const deleteCategoryResult = await deleteIncomeCategory(row._id)
         if (deleteCategoryResult.code > 0) {
-          ElMessage({
-            type: "info",
-            message: row.name + `删除成功`
+          ElNotification({
+            title: "Success",
+            message: row.name + `删除成功`,
+            type: "success"
           })
         } else {
-          ElMessage({
-            type: "info",
-            message: row.name + `删除失败`
+          ElNotification({
+            title: "Warning",
+            message: row.name + `删除成功`,
+            type: "warning"
           })
         }
         getCategoryList()

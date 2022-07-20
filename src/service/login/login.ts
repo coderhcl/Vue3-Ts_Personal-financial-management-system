@@ -7,16 +7,16 @@ enum LoginApi {
   AdminMenu = "/adminmenu",
   Menu = "/menu"
 }
-
+// 登录
 export function accountLoginRequest(account: IAccount) {
   return CLRequest.post<IDataType<ILoginResult>>({
     url: LoginApi.AccountLogin,
     data: account
   })
 }
-
+// 获取用户信息
 export function requestUserInfoById(id: string) {
-  return CLRequest.get<IDataType<ILoginResult>>({
+  return CLRequest.get<IDataType<any>>({
     url: LoginApi.LoginUserInfo + id
   })
 }
@@ -31,4 +31,10 @@ export function requestUserMenu(roleId: number) {
       url: LoginApi.Menu
     })
   }
+}
+// 获取公告信息
+export function requestNotice() {
+  return CLRequest.get<IDataType<any>>({
+    url: "/notice/isShow"
+  })
 }

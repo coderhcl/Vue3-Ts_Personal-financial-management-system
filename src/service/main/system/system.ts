@@ -51,8 +51,8 @@ export function addIncomeCategoryData(data: any) {
   // 添加新收入分类
   return clRequest.post<IDataType>({
     url: "/income/category",
-    data: data,
-    showLoading: true
+    data: data
+    // showLoading: true
   })
 }
 
@@ -77,8 +77,8 @@ export function addExpenseCategoryData(data: any) {
   // 添加新支出分类
   return clRequest.post<IDataType>({
     url: "/expense/category",
-    data: data,
-    showLoading: true
+    data: data
+    // showLoading: true
   })
 }
 
@@ -103,8 +103,8 @@ export function addInvestmentCategoryData(data: any) {
   // 添加新投资分类
   return clRequest.post<IDataType>({
     url: "/investment/category",
-    data: data,
-    showLoading: true
+    data: data
+    // showLoading: true
   })
 }
 
@@ -129,8 +129,8 @@ export function addDebtCategoryData(data: any) {
   // 添加新债务分类
   return clRequest.post<IDataType>({
     url: "/debt/category",
-    data: data,
-    showLoading: true
+    data: data
+    // showLoading: true
   })
 }
 
@@ -154,8 +154,8 @@ export function deleteDebtCategory(id: string) {
 export function addNoticeData(data: any) {
   return clRequest.post<IDataType>({
     url: "/notice",
-    data: data,
-    showLoading: true
+    data: data
+    // showLoading: true
   })
 }
 

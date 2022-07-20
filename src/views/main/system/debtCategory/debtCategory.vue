@@ -1,5 +1,5 @@
 <template>
-  <div class="incomeCategory">
+  <div class="debtCategory">
     <div class="search">
       <el-form :model="formData">
         <el-row>
@@ -35,18 +35,14 @@
       <div class="title">
         <span>债务分类列表</span>
         <div class="handleBtn">
-          <el-button type="primary" @click="categoryFormVisible = true"
+          <el-button type="primary" @click="debtFormVisible = true"
             >新建分类</el-button
           >
           <el-button class="refresh" @click="refresh">
             <el-icon><refresh /></el-icon>
           </el-button>
           <!-- 弹出卡面 -->
-          <el-dialog
-            v-model="categoryFormVisible"
-            title="添加新分类"
-            :width="400"
-          >
+          <el-dialog v-model="debtFormVisible" title="添加新分类" :width="400">
             <el-form
               :label-width="80"
               :model="addCategoryFormData"
@@ -59,22 +55,23 @@
             </el-form>
             <template #footer>
               <span class="dialog-footer">
-                <el-button @click="categoryFormVisible = false">取消</el-button>
+                <el-button @click="debtFormVisible = false">取消</el-button>
                 <el-button type="primary" @click="addCategory">添加</el-button>
               </span>
             </template>
           </el-dialog>
         </div>
       </div>
-      <el-table border :data="incomeTableData" stripe>
+      <el-table border :data="debtTableData" stripe>
         <el-table-column
           type="index"
           label="序号"
           align="center"
-          width="60"
+          width="100"
         ></el-table-column>
-        <el-table-column prop="name" label="分类" align="center" width="120" />
+        <el-table-column prop="name" label="分类" align="center" width="180" />
         <el-table-column
+          sortable
           prop="createTime"
           label="创建时间"
           align="center"
@@ -83,6 +80,7 @@
         >
         </el-table-column>
         <el-table-column
+          sortable
           prop="updateTime"
           label="更新时间"
           align="center"
@@ -112,12 +110,12 @@
       <el-dialog v-model="editCategoryVisible" title="编辑分类" :width="400">
         <el-form
           :label-width="80"
-          :model="aditCategoryFormData"
+          :model="editCategoryFormData"
           :rules="rules"
           ref="aditCategoryForm"
         >
           <el-form-item label="分类" prop="name">
-            <el-input v-model="aditCategoryFormData.name" />
+            <el-input v-model="editCategoryFormData.name" />
           </el-form-item>
         </el-form>
         <template #footer>
@@ -157,10 +155,10 @@ import {
 } from "@/service/main/system/system"
 import { parseDate } from "@/utils/parseDate"
 import { rules } from "./config/addCategoryRoules"
-import { ElForm, ElMessage, ElMessageBox } from "element-plus"
+import { ElForm, ElMessage, ElMessageBox, ElNotification } from "element-plus"
 
 export default defineComponent({
-  name: "incomeCategory",
+  name: "debtCategory",
   setup() {
     onMounted(() => {
       getCategoryList()
@@ -171,7 +169,7 @@ export default defineComponent({
       createTime: ""
     })
     // table数据
-    const incomeTableData = ref([])
+    const debtTableData = ref([])
     // 格式化时间
     const FormateCreateTime = (row: any) => {
       return parseDate(row.createTime)
@@ -193,7 +191,7 @@ export default defineComponent({
       })
       if (pageResult.code > 0) {
         categoryCount.value = pageResult.data.totalCount
-        incomeTableData.value = pageResult.data.list
+        debtTableData.value = pageResult.data.list
       }
     }
     // 改变分页时发送请求
@@ -222,7 +220,7 @@ export default defineComponent({
     }
 
     // 添加分类数据
-    const categoryFormVisible = ref(false)
+    const debtFormVisible = ref(false)
     const addCategoryFormData = ref({
       name: ""
     })
@@ -236,15 +234,17 @@ export default defineComponent({
           })
           // console.log(result)
           if (result.code > 0) {
-            ElMessage({
+            ElNotification({
+              title: "Success",
               message: result.data.message,
               type: "success"
             })
             getCategoryList()
             addCategoryFormData.value.name = ""
-            categoryFormVisible.value = false
+            debtFormVisible.value = false
           } else {
-            ElMessage({
+            ElNotification({
+              title: "Warning",
               message: result.data.message,
               type: "warning"
             })
@@ -259,33 +259,35 @@ export default defineComponent({
     // 编辑分类
     const aditCategoryForm = ref<InstanceType<typeof ElForm>>()
     const editCategoryVisible = ref(false)
-    const aditCategoryFormData = ref({
+    const editCategoryFormData = ref({
       name: "",
       updateTime: ""
     })
     const updateId = ref("")
     const openEdit = (row: any) => {
       updateId.value = row._id
-      aditCategoryFormData.value.name = row.name
+      editCategoryFormData.value.name = row.name
       editCategoryVisible.value = true
     }
     // 确认更改操作
     const editCategory = async () => {
       aditCategoryForm.value?.validate(async (valid) => {
         if (valid) {
-          aditCategoryFormData.value.updateTime = new Date().toISOString()
+          editCategoryFormData.value.updateTime = new Date().toISOString()
           const result = await updateDebtCategory(updateId.value, {
-            ...aditCategoryFormData.value
+            ...editCategoryFormData.value
           })
           if (result.code > 0) {
-            ElMessage({
+            ElNotification({
+              title: "Success",
               message: result.data.message,
               type: "success"
             })
             getCategoryList()
             editCategoryVisible.value = false
           } else {
-            ElMessage({
+            ElNotification({
+              title: "Warning",
               message: result.data.message,
               type: "warning"
             })
@@ -302,14 +304,16 @@ export default defineComponent({
       }).then(async () => {
         const deleteCategoryResult = await deleteDebtCategory(row._id)
         if (deleteCategoryResult.code > 0) {
-          ElMessage({
-            type: "info",
-            message: row.name + `删除成功`
+          ElNotification({
+            title: "Success",
+            message: row.name + `删除成功`,
+            type: "success"
           })
         } else {
-          ElMessage({
-            type: "info",
-            message: row.name + `删除失败`
+          ElNotification({
+            title: "Warning",
+            message: row.name + `删除失败`,
+            type: "warning"
           })
         }
         getCategoryList()
@@ -321,14 +325,14 @@ export default defineComponent({
       RefreshRight,
       Edit,
       Delete,
-      incomeTableData,
+      debtTableData,
       parseDate,
       FormateCreateTime,
       FormateUpdateTime,
       formData,
       cleanFormData,
       searchCategory,
-      categoryFormVisible,
+      debtFormVisible,
       addCategoryFormData,
       addCategory,
       rules,
@@ -336,7 +340,7 @@ export default defineComponent({
       refresh,
       editCategoryVisible,
       aditCategoryForm,
-      aditCategoryFormData,
+      editCategoryFormData,
       editCategory,
       openEdit,
       updateId,

@@ -3,6 +3,7 @@ import login from "./login/login"
 // import registration from "./login/registration"
 import { IRootState, IStoreType } from "./types"
 import system from "./main/system/user/userManage"
+import message from "./main/message/message"
 const store = createStore<IRootState>({
   state: () => {
     return {
@@ -15,12 +16,14 @@ const store = createStore<IRootState>({
   actions: {},
   modules: {
     login,
-    system
+    system,
+    message
   }
 })
 
 export function setupStore() {
   store.dispatch("login/loadLocalLogin")
+  store.dispatch("message/loadLocalMessage")
 }
 
 export function useStore(): Store<IStoreType> {

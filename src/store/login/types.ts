@@ -3,6 +3,8 @@ export interface ILoginState {
   userInfo: any
   roleId: number
   userMenus: any
+  user?: any
+  notice: any
 }
 export interface IRegiState {
   name: string

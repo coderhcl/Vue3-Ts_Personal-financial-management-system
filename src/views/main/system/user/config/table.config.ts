@@ -6,10 +6,10 @@ export const tableConfig = {
     { prop: "phone", label: "手机号码", minWidth: "150", slotName: "phone" },
     { prop: "email", label: "邮箱", minWidth: "200", slotName: "email" },
     {
-      prop: "createTimes",
+      prop: "createTime",
       label: "创建时间",
       minWidth: "200",
-      slotName: "createTimes"
+      slotName: "createTime"
     },
     {
       prop: "updateTime",

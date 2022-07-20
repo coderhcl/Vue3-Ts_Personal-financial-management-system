@@ -8,7 +8,20 @@
     <!-- 面包屑 -->
     <div class="content">
       <cl-breadcrumb :breadcrumbs="breadcrumbs" />
-      <user-info />
+      <!-- 签到 -->
+      <div class="user">
+        <el-button :disabled="isHiddenAndDisable" @click="handleSignClick">
+          <el-badge is-dot class="item" :hidden="isHiddenAndDisable">
+            <el-tooltip content="签到" placement="bottom" effect="dark">
+              <el-icon class="sign" :size="22">
+                <document-checked />
+              </el-icon>
+            </el-tooltip>
+          </el-badge>
+        </el-button>
+        <!-- 用户 -->
+        <user-info />
+      </div>
     </div>
   </div>
 </template>
@@ -20,6 +33,10 @@ import clBreadcrumb from "@/base-ui/breadcrumb"
 import { pathMapBreadcrumbs } from "@/utils/map-menus"
 import { useStore } from "@/store"
 import { useRoute } from "vue-router"
+import { updateUser } from "@/service/main/system/system"
+import { ElMessage, ElNotification } from "element-plus"
+import localCache from "@/utils/cache"
+
 export default defineComponent({
   components: {
     UserInfo,
@@ -42,8 +59,47 @@ export default defineComponent({
       const currentPath = route.path
       return pathMapBreadcrumbs(userMenus, currentPath)
     })
+    const FormData = ref({
+      sign: 0
+    })
+    // 展示红点和是否能点击
+    const isHiddenAndDisable = ref(false)
+    const id = store.state.login.userInfo.data.user._id
+    const name = store.state.login.userInfo.data.user.name
+    FormData.value.sign = store.state.login.userInfo.data.user.sign
 
-    return { isFold, handleFoldClick, breadcrumbs }
+    // 判断如果今天和存在本地的时间是否一样
+    let today = new Date().toLocaleDateString()
+    // console.log(today)
+
+    const isToday = localCache.getCache(`${name}+isToday`)
+    //如果时间一样，不可点击
+    if (today === isToday) {
+      isHiddenAndDisable.value = true
+    }
+    // 处理点击签到功能
+    const handleSignClick = async () => {
+      const day = new Date().toLocaleDateString()
+      isHiddenAndDisable.value = true
+      FormData.value.sign++
+      const result = await updateUser(id, { ...FormData.value })
+      if (result.code > 0) {
+        localCache.setCache(`${name}+isToday`, day)
+        ElNotification({
+          title: "Success",
+          message: "签到成功",
+          type: "success"
+        })
+      }
+    }
+    return {
+      isFold,
+      handleFoldClick,
+      breadcrumbs,
+      FormData,
+      handleSignClick,
+      isHiddenAndDisable
+    }
   }
 })
 </script>
@@ -65,6 +121,17 @@ export default defineComponent({
     align-items: center;
     flex: 1;
     padding: 0 10px 0 15px;
+    .user {
+      display: flex;
+      .el-button {
+        width: 20px;
+        border: 0;
+      }
+
+      .sign {
+        color: grey;
+      }
+    }
   }
 }
 </style>
