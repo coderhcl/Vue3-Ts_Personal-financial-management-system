@@ -14,16 +14,16 @@
 #### 截图（一部分）
 
 - 登录注册 
-![](https://github.com/coderhcl/pic/blob/main/1.jpg)
-![](https://github.com/coderhcl/pic/blob/main/2.jpg)
+![](https://github.com/coderhcl/pic/blob/main/1.JPG)
+![](https://github.com/coderhcl/pic/blob/main/2.JPG)
 - 首页数据展示
-![](https://github.com/coderhcl/pic/blob/main/4.jpg)
+![](https://github.com/coderhcl/pic/blob/main/4.JPG)
 - 收入管理
-![](https://github.com/coderhcl/pic/blob/main/6.jpg)
+![](https://github.com/coderhcl/pic/blob/main/6.JPG)
 - 投资管理
-![](https://github.com/coderhcl/pic/blob/main/8-1.jpg)
+![](https://github.com/coderhcl/pic/blob/main/8-1.JPG)
 - 信息管理
-![](https://github.com/coderhcl/pic/blob/main/11.jpg)
+![](https://github.com/coderhcl/pic/blob/main/11.JPG)
 - 公告管理
-![](https://github.com/coderhcl/pic/blob/main/17.jpg)
+![](https://github.com/coderhcl/pic/blob/main/17.JPG)
 
